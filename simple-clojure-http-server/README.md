@@ -1,10 +1,10 @@
 # simple-clojure-http-server
 
-A Clojure library designed to ... well, that part is up to you.
+A simple Clojure HTTP server.
 
 ## Usage
 
-FIXME
+lein run
 
 ## License
 
