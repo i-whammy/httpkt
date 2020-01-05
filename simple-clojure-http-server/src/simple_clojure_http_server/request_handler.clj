@@ -2,6 +2,14 @@
   (:require [clojure.java.io :as io])
   (:import (java.nio.file Files LinkOption Paths)))
 
+(def reasons
+  {403 {:reason "Forbidden"
+        :path "public/403.html"}
+   404 {:reason "Not Found"
+        :path "public/404.html"}})
+
+(get reasons 404)
+
 (defn- file->bytes [path]
   (with-open [xin (io/input-stream path)
               xout (java.io.ByteArrayOutputStream.)]
@@ -22,9 +30,11 @@
     "public/index.html"
     (str "public" path)))
 
-(defn handle-not-found []
-  {:status 404
-   :body (file->bytes "public/404.html")})
+(defn handle-not-ok [status-code]
+  (let [{:keys [reason path]} (get reasons status-code)]
+    {:status status-code
+     :reason reason
+     :body (file->bytes path)}))
 
 (defn handle-ok [path]
   {:status 200
@@ -32,6 +42,7 @@
 
 (defn handle [{:keys [method path version]}]
   (let [normalized-path (normalize path)]
-    (if (is-file-exists? normalized-path)
-      (handle-ok normalized-path)
-      (handle-not-found))))
+    (cond
+      (not (.startsWith normalized-path "public")) (handle-not-ok 403)
+      (not (is-file-exists? normalized-path)) (handle-not-ok 404)
+      :else (handle-ok normalized-path))))

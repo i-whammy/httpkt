@@ -8,8 +8,8 @@
   (let [header (str
                 "HTTP/1.1" sp status sp "TODO" crlf
                 "Date:" (str (new java.util.Date)) crlf
-                "Content-Length" "0" crlf
-                "Content-Type:" "html" crlf
+                "Content-Length" (count body) crlf
+                "Content-Type:" "text/html" crlf
                 "Connection: Close" crlf
                 crlf)]
     (doto output

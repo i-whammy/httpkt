@@ -12,7 +12,16 @@
     (t/is (= "public/index.html"
              (sut/normalize "/")))))
 
-(t/deftest test-handle-not-found
-  (t/testing "return status code and specific page path"
-    (t/is (= 404
-             (:status (sut/handle-not-found))))))
+(t/deftest test-handle-not-ok
+  (t/testing "case when not found"
+    (let [result (sut/handle-not-ok 404)]
+      (t/is (= 404
+               (:status result)))
+      (t/is (= "Not Found"
+               (:reason result)))))
+  (t/testing "case when forbidden"
+    (let [result (sut/handle-not-ok 403)]
+      (t/is (= 403
+               (:status result)))
+      (t/is (= "Forbidden"
+               (:reason result))))))
