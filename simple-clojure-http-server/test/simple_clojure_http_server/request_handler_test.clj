@@ -3,10 +3,16 @@
             [clojure.test :as t]
             [clojure.java.io :as io]))
 
-(t/deftest test-handler
-  (t/testing "receive reader and return map of content"
-    (with-open [reader (io/reader (char-array "GET /hoge.html HTTP/1.1"))]
-      (t/is (= {:method "GET"
-                :path "/hoge.html"
-                :version "HTTP/1.1"}
-               (sut/handle reader))))))
+(t/deftest test-normalize
+  (t/testing "add public/ when it is not a directory"
+    (t/is (= "public/index.html"
+             (sut/normalize "/index.html"))))
+
+  (t/testing "return public/index.html when it is a directory"
+    (t/is (= "public/index.html"
+             (sut/normalize "/")))))
+
+(t/deftest test-handle-not-found
+  (t/testing "return status code and specific page path"
+    (t/is (= 404
+             (:status (sut/handle-not-found))))))

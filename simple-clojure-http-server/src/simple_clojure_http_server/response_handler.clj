@@ -4,15 +4,17 @@
 
 (def crlf "\r\n")
 
-(defn handle [output content]
+(defn handle [output {:keys [status body]}]
   (let [header (str
-                "HTTP/1.1" sp "201" sp "TODO" crlf
-                "Date:" "04-01-2020" crlf
-                "Content-Length:" 0 crlf
+                "HTTP/1.1" sp status sp "TODO" crlf
+                "Date:" (str (new java.util.Date)) crlf
+                "Content-Length" "0" crlf
                 "Content-Type:" "html" crlf
                 "Connection: Close" crlf
                 crlf)]
     (doto output
       (.write (.getBytes header))
-         (.write (.getBytes (str "method: " (first (vals content)))))
-         (.flush))))
+      (.write body)
+      (.write (.getBytes crlf))
+      (.flush))))
+

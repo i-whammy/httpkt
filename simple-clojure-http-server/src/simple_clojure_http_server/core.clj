@@ -1,7 +1,8 @@
 (ns simple-clojure-http-server.core
   (:require [clojure.java.io :as io]
-            [simple-clojure-http-server.response-handler :as response-handler]
-            [simple-clojure-http-server.request-handler :as request-handler]))
+            [simple-clojure-http-server.request-handler :as request-handler]
+            [simple-clojure-http-server.request-parser :as request-parser]
+            [simple-clojure-http-server.response-handler :as response-handler]))
 
 (defn -main
   "Launch a simple HTTP server."
@@ -12,5 +13,7 @@
             input (.getInputStream socket)
             output (.getOutputStream socket)]
         (with-open [reader (io/reader input)]
-          (let [content (request-handler/handle reader)]
-            (response-handler/handle output content)))))))
+          (->> reader
+               (request-parser/parse)
+               (request-handler/handle)
+               (response-handler/handle output)))))))
