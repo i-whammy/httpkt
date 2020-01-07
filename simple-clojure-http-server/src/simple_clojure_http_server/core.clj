@@ -1,5 +1,6 @@
 (ns simple-clojure-http-server.core
-  (:require [clojure.java.io :as io]
+  (:require [clojure.core.async :refer [thread]]
+            [clojure.java.io :as io]
             [simple-clojure-http-server.request-handler :as request-handler]
             [simple-clojure-http-server.request-parser :as request-parser]
             [simple-clojure-http-server.response-handler :as response-handler]))
@@ -12,8 +13,9 @@
       (let [socket (.accept server-socket)
             input (.getInputStream socket)
             output (.getOutputStream socket)]
-        (with-open [reader (io/reader input)]
-          (->> reader
-               (request-parser/parse)
-               (request-handler/handle)
-               (response-handler/handle output)))))))
+        (thread
+          (with-open [reader (io/reader input)]
+            (->> reader
+                 (request-parser/parse)
+                 (request-handler/handle)
+                 (response-handler/handle output))))))))
