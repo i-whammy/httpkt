@@ -1,3 +1,3 @@
 # simple-http
-Simple Http Server written with Kotlin, Clojure(WIP)
+Simple Http Server written with Kotlin, Clojure
 
